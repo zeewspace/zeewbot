@@ -25,7 +25,7 @@ Este proyecto sigue el código de conducta de Zeew Space. Al participar, se espe
 
 ### Reportando Bugs
 
-Los bugs se rastrean como [GitHub issues](https://github.com/zeew-space/zeewbot/issues). Antes de crear un reporte:
+Los bugs se rastrean como [GitHub issues](https://github.com/zeewspace/zeewbot/issues). Antes de crear un reporte:
 
 1. **Verifica** si el bug ya ha sido reportado
 2. **Asegúrate** de estar usando la última versión
@@ -204,8 +204,8 @@ Todos los contribuidores serán agregados a la lista de contribuidores en el REA
 Si tienes dudas:
 
 1. Revisa la [documentación](../README.md)
-2. Busca en los [issues existentes](https://github.com/zeew-space/zeewbot/issues)
-3. Únete a nuestro [Discord](https://discord.gg/zeew-space)
+2. Busca en los [issues existentes](https://github.com/zeewspace/zeewbot/issues)
+3. Únete a nuestro [Discord](https://discord.gg/zeewspace)
 4. Crea un nuevo issue con la etiqueta `question`
 
 ---

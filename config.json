@@ -26,8 +26,8 @@
     "waitTime": 900000,
     "maxBatchSize": 10,
     "messages": {
-      "single": "🚀 ¡Bienvenid@ {user} a **Zeew Space**! 🌟\n\nNos alegra mucho que te unas a nuestra comunidad de aprendizaje. No olvides:\n\n📋 Leer las reglas en <#RULES_CHANNEL>\n👋 Presentarte en <#INTROS_CHANNEL>\n🎯 Elegir tus roles en <#ROLES_CHANNEL>\n\n¡Que disfrutes tu viaje espacial con nosotros! 🛸",
-      "multiple": "🚀 ¡Bienvenid@s astronautas a **Zeew Space**! 🌟\n\n{users}\n\nNos alegra mucho que se unan a nuestra comunidad de aprendizaje. No olviden:\n\n📋 Leer las reglas en <#RULES_CHANNEL>\n👋 Presentarse en <#INTROS_CHANNEL>\n🎯 Elegir sus roles en <#ROLES_CHANNEL>\n\n¡Que disfruten su viaje espacial con nosotros! 🛸"
+      "single": "🚀 ¡Bienvenid@ {user} a **Zeew Space**! 🌟\n\nNos alegra mucho que te unas a nuestra comunidad de aprendizaje. No olvides:\n\n📋 Leer las reglas en <#1290134529490686014>\n👋 Presentarte en <#1057138286948262038>\n\n¡Que disfrutes tu viaje espacial con nosotros! 🛸",
+      "multiple": "🚀 ¡Bienvenid@s astronautas a **Zeew Space**! 🌟\n\n{users}\n\nNos alegra mucho que se unan a nuestra comunidad de aprendizaje. No olviden:\n\n📋 Leer las reglas en <#1290134529490686014>\n👋 Presentarse en <#1057138286948262038>\n\n¡Que disfruten su viaje espacial con nosotros! 🛸"
     }
   }
 }
