@@ -30,7 +30,7 @@ async function main() {
     await eventHandler.loadEvents();
 
     // Iniciar el bot
-    await client.start(process.env.DISCORD_TOKEN);
+    await client.start(process.env.DISCORD_TOKEN!);
     
     // Iniciar servidor de health check
     healthCheckServer.start(() => {

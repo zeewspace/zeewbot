@@ -21,7 +21,7 @@ export const command: ICommand = {
     if (status.length === 0) {
       embed.setDescription('No hay bienvenidas pendientes en este momento.');
     } else {
-      const guildStatus = status.find(s => s.guildId === interaction.guildId);
+      const guildStatus = status.find((s: any) => s.guildId === interaction.guildId);
       
       if (guildStatus) {
         const waitingMinutes = Math.floor(guildStatus.waitingTime / 60000);

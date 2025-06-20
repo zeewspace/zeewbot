@@ -3,7 +3,6 @@ import { readdirSync } from 'fs';
 import { join } from 'path';
 import { pathToFileURL } from 'url';
 import { IBot } from '../interfaces/IBot';
-import { ICommand } from '../interfaces/ICommand';
 
 export class CommandHandler {
   private commands: any[] = [];
@@ -12,13 +11,28 @@ export class CommandHandler {
 
   public async loadCommands(): Promise<void> {
     const commandsPath = join(__dirname, '..', 'commands');
-    const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
+    const commandFiles = readdirSync(commandsPath).filter(file => {
+      // En producción solo cargar archivos .js, en desarrollo .ts
+      const isProduction = process.env.NODE_ENV === 'production';
+      const extension = isProduction ? '.js' : '.ts';
+      return file.endsWith(extension) && !file.endsWith('.d.ts');
+    });
 
     for (const file of commandFiles) {
       try {
         const filePath = join(commandsPath, file);
-        const fileUrl = pathToFileURL(filePath).href;
-        const { command } = await import(fileUrl);
+        
+        // En producción, usar require para archivos compilados
+        // En desarrollo, usar import con pathToFileURL
+        let commandModule;
+        if (process.env.NODE_ENV === 'production') {
+          commandModule = require(filePath);
+        } else {
+          const fileUrl = pathToFileURL(filePath).href;
+          commandModule = await import(fileUrl);
+        }
+        
+        const { command } = commandModule;
         
         if ('data' in command && 'execute' in command) {
           this.client.commands.set(command.data.name, command);

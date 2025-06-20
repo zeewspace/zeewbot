@@ -11,7 +11,7 @@ export const command: ICommand = {
         .setName('motivo')
         .setDescription('Motivo del ticket')
         .setRequired(false)
-    ),
+    ) as SlashCommandBuilder,
 
   async execute(interaction: ChatInputCommandInteraction, client: IBot) {
     await interaction.deferReply({ ephemeral: true });
