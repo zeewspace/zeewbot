@@ -1,0 +1,33 @@
+{
+  "prefix": "!",
+  "guildId": "YOUR_GUILD_ID",
+  "channels": {
+    "welcome": "WELCOME_CHANNEL_ID",
+    "tickets": "TICKETS_CATEGORY_ID",
+    "logs": "LOGS_CHANNEL_ID"
+  },
+  "roles": {
+    "member": "MEMBER_ROLE_ID",
+    "support": "SUPPORT_ROLE_ID"
+  },
+  "colors": {
+    "primary": "#F9E2A1",
+    "success": "#4CAF50",
+    "error": "#FF67A0",
+    "warning": "#F59064",
+    "info": "#6D7BB7"
+  },
+  "tickets": {
+    "maxOpenPerUser": 3,
+    "inactivityClose": 172800000,
+    "transcriptChannel": "TRANSCRIPT_CHANNEL_ID"
+  },
+  "welcome": {
+    "waitTime": 900000,
+    "maxBatchSize": 10,
+    "messages": {
+      "single": "🚀 ¡Bienvenid@ {user} a **Zeew Space**! 🌟\n\nNos alegra mucho que te unas a nuestra comunidad de aprendizaje. No olvides:\n\n📋 Leer las reglas en <#RULES_CHANNEL>\n👋 Presentarte en <#INTROS_CHANNEL>\n🎯 Elegir tus roles en <#ROLES_CHANNEL>\n\n¡Que disfrutes tu viaje espacial con nosotros! 🛸",
+      "multiple": "🚀 ¡Bienvenid@s astronautas a **Zeew Space**! 🌟\n\n{users}\n\nNos alegra mucho que se unan a nuestra comunidad de aprendizaje. No olviden:\n\n📋 Leer las reglas en <#RULES_CHANNEL>\n👋 Presentarse en <#INTROS_CHANNEL>\n🎯 Elegir sus roles en <#ROLES_CHANNEL>\n\n¡Que disfruten su viaje espacial con nosotros! 🛸"
+    }
+  }
+}
