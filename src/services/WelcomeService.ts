@@ -5,12 +5,20 @@ import config from '../../config.json';
 interface PendingWelcome {
   members: GuildMember[];
   timeout: NodeJS.Timeout;
+  createdAt: number;
+  lastUpdate: number;
 }
 
 export class WelcomeService {
   private pendingWelcomes: Map<string, PendingWelcome> = new Map();
+  private cleanupInterval: NodeJS.Timeout | null = null;
 
-  constructor(private client: IBot) {}
+  constructor(private client: IBot) {
+    // Limpiar timeouts antiguos cada 5 minutos
+    this.cleanupInterval = setInterval(() => {
+      this.cleanupOldWelcomes();
+    }, 5 * 60 * 1000);
+  }
 
   public async handleNewMember(member: GuildMember): Promise<void> {
     const guildId = member.guild.id;
@@ -23,6 +31,7 @@ export class WelcomeService {
       // Reiniciar el temporizador
       clearTimeout(pending.timeout);
       pending.timeout = this.createTimeout(guildId);
+      pending.lastUpdate = Date.now();
       
       this.client.logger.info(`Added ${member.user.tag} to pending welcome group (${pending.members.length} members)`);
     } else {
@@ -30,7 +39,9 @@ export class WelcomeService {
       const timeout = this.createTimeout(guildId);
       this.pendingWelcomes.set(guildId, {
         members: [member],
-        timeout
+        timeout,
+        createdAt: Date.now(),
+        lastUpdate: Date.now()
       });
       
       this.client.logger.info(`Started new welcome group for ${member.user.tag}`);
@@ -99,11 +110,45 @@ export class WelcomeService {
     }
   }
 
+  private cleanupOldWelcomes(): void {
+    const now = Date.now();
+    const maxAge = config.welcome.waitTime * 2; // Doble del tiempo de espera como máximo
+    
+    for (const [guildId, pending] of this.pendingWelcomes) {
+      if (now - pending.createdAt > maxAge) {
+        this.client.logger.warn(`Cleaning up stale welcome for guild ${guildId}`);
+        clearTimeout(pending.timeout);
+        this.pendingWelcomes.delete(guildId);
+      }
+    }
+  }
+
   public cleanup(): void {
+    // Limpiar el intervalo de limpieza
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+    
     // Limpiar todos los timeouts pendientes
     for (const [guildId, pending] of this.pendingWelcomes) {
       clearTimeout(pending.timeout);
       this.sendWelcomeMessage(guildId);
     }
+  }
+
+  public getStatus(): { guildId: string; memberCount: number; waitingTime: number }[] {
+    const status = [];
+    const now = Date.now();
+    
+    for (const [guildId, pending] of this.pendingWelcomes) {
+      status.push({
+        guildId,
+        memberCount: pending.members.length,
+        waitingTime: now - pending.lastUpdate
+      });
+    }
+    
+    return status;
   }
 }
