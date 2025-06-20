@@ -1,22 +1,22 @@
 version: '3.8'
 
 services:
-  # bot:
-  #   build: .
-  #   container_name: zeewbot
-  #   restart: unless-stopped
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - NODE_ENV=production
-  #     - REDIS_URL=redis://redis:6379
-  #   volumes:
-  #     - ./logs:/app/logs
-  #     - ./config.json:/app/config.json:ro
-  #   depends_on:
-  #     - redis
-  #   networks:
-  #     - zeewbot-network
+  bot:
+    build: .
+    container_name: zeewbot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./logs:/app/logs
+      - ./config.json:/app/config.json:ro
+    depends_on:
+      - redis
+    networks:
+      - zeewbot-network
 
   redis:
     image: redis:7-alpine
