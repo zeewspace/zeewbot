@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { ZeewBot } from './config/ZeewBot';
 import { CommandHandler } from './handlers/CommandHandler';
 import { EventHandler } from './handlers/EventHandler';
+import { HealthCheckServer } from './utils/HealthCheckServer';
 import logger from './utils/logger';
 import config from '../config.json';
 
@@ -13,6 +14,9 @@ if (!process.env.DISCORD_TOKEN) {
 
 // Crear instancia del bot
 const client = new ZeewBot(logger);
+
+// Crear servidor de health check
+const healthCheckServer = new HealthCheckServer(logger);
 
 // Función principal
 async function main() {
@@ -27,6 +31,11 @@ async function main() {
 
     // Iniciar el bot
     await client.start(process.env.DISCORD_TOKEN);
+    
+    // Iniciar servidor de health check
+    healthCheckServer.start(() => {
+      return client.ws.ping > 0 && client.isReady();
+    });
 
     // Desplegar comandos cuando el bot esté listo
     client.once('ready', async () => {
@@ -48,12 +57,14 @@ async function main() {
 // Manejar señales de cierre
 process.on('SIGINT', async () => {
   logger.info('Received SIGINT signal');
+  healthCheckServer.stop();
   await client.shutdown();
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
   logger.info('Received SIGTERM signal');
+  healthCheckServer.stop();
   await client.shutdown();
   process.exit(0);
 });

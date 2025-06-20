@@ -1,14 +1,14 @@
 {
   "prefix": "!",
-  "guildId": "YOUR_GUILD_ID",
+  "guildId": "739306480586588241",
   "channels": {
-    "welcome": "WELCOME_CHANNEL_ID",
-    "tickets": "TICKETS_CATEGORY_ID",
-    "logs": "LOGS_CHANNEL_ID"
+    "welcome": "1291969884506296331",
+    "tickets": "1291973052476948531",
+    "logs": "1347641267642957855"
   },
   "roles": {
-    "member": "MEMBER_ROLE_ID",
-    "support": "SUPPORT_ROLE_ID"
+    "member": "739306480586588241",
+    "support": "1291969663122538517"
   },
   "colors": {
     "primary": "#F9E2A1",
@@ -20,7 +20,7 @@
   "tickets": {
     "maxOpenPerUser": 3,
     "inactivityClose": 172800000,
-    "transcriptChannel": "TRANSCRIPT_CHANNEL_ID"
+    "transcriptChannel": "1347380865893798018"
   },
   "welcome": {
     "waitTime": 900000,
