@@ -1,14 +1,14 @@
 {
   "prefix": "!",
-  "guildId": "739306480586588241",
+  "guildId": "686217025135444144",
   "channels": {
-    "welcome": "1291969884506296331",
-    "tickets": "1291973052476948531",
-    "logs": "1347641267642957855"
+    "welcome": "686217025139638382",
+    "tickets": "799385153683718164",
+    "logs": "799640072332378162"
   },
   "roles": {
-    "member": "739306480586588241",
-    "support": "1291969663122538517"
+    "member": "686217025135444144",
+    "support": "911661090704863293"
   },
   "colors": {
     "primary": "#F9E2A1",
@@ -20,7 +20,7 @@
   "tickets": {
     "maxOpenPerUser": 3,
     "inactivityClose": 172800000,
-    "transcriptChannel": "1347380865893798018"
+    "transcriptChannel": "799640072332378162"
   },
   "welcome": {
     "waitTime": 900000,

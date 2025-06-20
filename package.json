@@ -8,7 +8,10 @@
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix"
+    "lint:fix": "eslint src --ext .ts --fix",
+    "clear-commands": "tsx src/clearCommands.ts",
+    "clear-commands:global": "tsx src/clearCommands.ts --global",
+    "manage-commands": "tsx src/manageCommands.ts"
   },
   "keywords": ["discord", "bot", "zeew"],
   "author": "Zeew Space",
