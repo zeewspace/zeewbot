@@ -1,5 +1,6 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
+import { pathToFileURL } from 'url';
 import { IBot } from '../interfaces/IBot';
 import { IEvent } from '../interfaces/IEvent';
 import { ClientEvents } from 'discord.js';
@@ -13,7 +14,9 @@ export class EventHandler {
 
     for (const file of eventFiles) {
       try {
-        const { event } = await import(join(eventsPath, file));
+        const filePath = join(eventsPath, file);
+        const fileUrl = pathToFileURL(filePath).href;
+        const { event } = await import(fileUrl);
         
         if (event.once) {
           this.client.once(event.name, (...args) => event.execute(this.client, ...args));

@@ -1,6 +1,7 @@
 import { REST, Routes } from 'discord.js';
 import { readdirSync } from 'fs';
 import { join } from 'path';
+import { pathToFileURL } from 'url';
 import { IBot } from '../interfaces/IBot';
 import { ICommand } from '../interfaces/ICommand';
 
@@ -15,7 +16,9 @@ export class CommandHandler {
 
     for (const file of commandFiles) {
       try {
-        const { command } = await import(join(commandsPath, file));
+        const filePath = join(commandsPath, file);
+        const fileUrl = pathToFileURL(filePath).href;
+        const { command } = await import(fileUrl);
         
         if ('data' in command && 'execute' in command) {
           this.client.commands.set(command.data.name, command);
