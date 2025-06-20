@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { IBot } from './IBot';
 
 export interface ICommand {

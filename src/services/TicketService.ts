@@ -7,8 +7,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
-  CategoryChannel,
-  Message
+  CategoryChannel
 } from 'discord.js';
 import { IBot } from '../interfaces/IBot';
 import config from '../../config.json';

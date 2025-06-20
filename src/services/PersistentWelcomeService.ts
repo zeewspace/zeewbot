@@ -115,14 +115,12 @@ export class PersistentWelcomeService {
     
     try {
       let memberIds: string[] = [];
-      let memberTags: string[] = [];
       
       if (this.database.isReady()) {
         const data = await this.database.get(key);
         if (data) {
           const parsed: PendingWelcomeData = JSON.parse(data);
           memberIds = parsed.memberIds;
-          memberTags = parsed.memberTags;
           
           // Eliminar de Redis
           await this.database.delete(key);
@@ -165,7 +163,7 @@ export class PersistentWelcomeService {
     }
   }
 
-  private handleMemberInMemory(member: GuildMember): void {
+  private handleMemberInMemory(_member: GuildMember): void {
     // Implementación de fallback similar a la original
     // pero sin persistencia
   }
