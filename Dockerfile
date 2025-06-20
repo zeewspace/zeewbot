@@ -11,8 +11,8 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Instalar dependencias
-RUN npm ci --only=production && \
-    npm ci --only=development
+RUN npm install --production && \
+    npm install --only=development
 
 # Copiar código fuente
 COPY src ./src
