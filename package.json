@@ -13,7 +13,11 @@
     "clear-commands:global": "tsx src/clearCommands.ts --global",
     "manage-commands": "tsx src/manageCommands.ts"
   },
-  "keywords": ["discord", "bot", "zeew"],
+  "keywords": [
+    "discord",
+    "bot",
+    "zeew"
+  ],
   "author": "Zeew Space",
   "license": "MIT",
   "dependencies": {
@@ -24,6 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
