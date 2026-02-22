@@ -26,7 +26,7 @@
     "waitTime": 900000,
     "maxBatchSize": 10,
     "messages": {
-      "single": "🚀 ¡Bienvenid@ {user} a **Zeew Space**! 🌟\n\nNos alegra mucho que te unas a nuestra comunidad de aprendizaje. No olvides:\n\n📋 Leer las reglas en <#1290134529490686014>\n👋 Presentarte en <#1057138286948262038>\n\n¡Que disfrutes tu viaje espacial con nosotros! 🛸",
+      "single": "🛸 Bienvenid@ {user} a **Zeew Space**.\n\nEste es tu espacio para aprender creando, equivocarte sin miedo y convertir ideas en proyectos reales.\n\n📋 Revisa las reglas en <#1290134529490686014>\n👋 Preséntate en <#1057138286948262038>\n🧠 Comparte lo que aprendes en <#914272337254285343>\n🚀 Participa en actividades en <#1390143186588008539>\n\nAquí no vienes a memorizar. Vienes a construir.",
       "multiple": "🚀 ¡Bienvenid@s astronautas a **Zeew Space**! 🌟\n\n{users}\n\nNos alegra mucho que se unan a nuestra comunidad de aprendizaje. No olviden:\n\n📋 Leer las reglas en <#1290134529490686014>\n👋 Presentarse en <#1057138286948262038>\n\n¡Que disfruten su viaje espacial con nosotros! 🛸"
     }
   }
