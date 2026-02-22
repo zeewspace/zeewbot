@@ -24,30 +24,17 @@ export const command: ICommand = {
     async execute(interaction: ChatInputCommandInteraction, _client: IBot) {
         const targetUser = interaction.options.getUser('usuario') ?? interaction.user;
 
-        // Intentar obtener el miembro del servidor para acceder al avatar de servidor
         const member = await interaction.guild?.members.fetch(targetUser.id).catch(() => null);
 
-        // Avatar de servidor (guild-specific) — puede ser null si no tiene
         const guildAvatarUrl = member?.avatarURL({ size: 1024, extension: 'png' }) ?? null;
 
-        // Avatar global
         const globalAvatarUrl = targetUser.avatarURL({ size: 1024, extension: 'png' });
-
-        // Avatar a mostrar por defecto: el de servidor si existe, si no el global
         const defaultAvatarUrl = guildAvatarUrl ?? globalAvatarUrl ?? targetUser.defaultAvatarURL;
-
-        // Determinar si tiene avatar de servidor distinto al global
         const hasGuildAvatar = !!guildAvatarUrl;
-        // Determinar si tiene avatar global (distinto del por defecto del sistema)
         const hasGlobalAvatar = !!globalAvatarUrl;
 
-        /**
-         * Genera los 3 botones de descarga (PNG, JPG, WEBP) para una URL de avatar dada.
-         * Se reemplaza la extensión y se asegura el tamaño 1024.
-         */
         const buildDownloadRow = (baseUrl: string): ActionRowBuilder<ButtonBuilder> => {
             const toFormat = (url: string, ext: 'png' | 'jpg' | 'webp'): string => {
-                // Reemplazar la extensión en la URL de CDN de Discord
                 return url.replace(/\.(png|jpg|jpeg|webp|gif)(\?.*)?$/, `.${ext}?size=1024`);
             };
 
@@ -67,31 +54,22 @@ export const command: ICommand = {
             );
         };
 
-        /**
-         * Construye el embed del avatar de servidor.
-         */
         const buildGuildEmbed = (): EmbedBuilder => {
             return new EmbedBuilder()
                 .setImage(defaultAvatarUrl)
                 .setColor(0x5865F2);
         };
 
-        /**
-         * Construye el embed del avatar global.
-         */
         const buildGlobalEmbed = (): EmbedBuilder => {
             return new EmbedBuilder()
                 .setImage(globalAvatarUrl!)
                 .setColor(0x5865F2);
         };
 
-        // Fila de descarga para el avatar por defecto (servidor o global si no tiene de servidor)
         const downloadRow = buildDownloadRow(defaultAvatarUrl);
 
-        // Componentes de la respuesta principal
         const components: ActionRowBuilder<ButtonBuilder>[] = [downloadRow];
 
-        // Si tiene avatar de servidor Y tiene avatar global, mostramos el botón "Ver avatar global"
         if (hasGuildAvatar && hasGlobalAvatar) {
             const globalBtnRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
@@ -107,7 +85,6 @@ export const command: ICommand = {
             components,
         });
 
-        // Solo escuchamos el colector si hay botón de avatar global
         if (!hasGuildAvatar || !hasGlobalAvatar) return;
 
         const collector = response.createMessageComponentCollector({
