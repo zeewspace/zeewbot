@@ -208,10 +208,11 @@ export const command: ICommand = {
                                 .setStyle(ButtonStyle.Danger)
                         );
 
-                    await submitted.update({ embeds: [detailEmbed], components: [btnRow] });
+                    await submitted.deferUpdate();
+                    await submitted.editReply({ embeds: [detailEmbed], components: [btnRow] });
 
                 } catch (err) {
-                    // Modal timeout or error
+
                 }
             }
         });
