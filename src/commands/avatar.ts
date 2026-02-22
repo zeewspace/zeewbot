@@ -23,11 +23,8 @@ export const command: ICommand = {
 
     async execute(interaction: ChatInputCommandInteraction, _client: IBot) {
         const targetUser = interaction.options.getUser('usuario') ?? interaction.user;
-
         const member = await interaction.guild?.members.fetch(targetUser.id).catch(() => null);
-
         const guildAvatarUrl = member?.avatarURL({ size: 1024, extension: 'png' }) ?? null;
-
         const globalAvatarUrl = targetUser.avatarURL({ size: 1024, extension: 'png' });
         const defaultAvatarUrl = guildAvatarUrl ?? globalAvatarUrl ?? targetUser.defaultAvatarURL;
         const hasGuildAvatar = !!guildAvatarUrl;
