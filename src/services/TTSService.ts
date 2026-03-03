@@ -7,10 +7,17 @@ import {
     VoiceConnectionStatus,
     entersState,
     StreamType,
+    NoSubscriberBehavior,
 } from '@discordjs/voice';
 import { VoiceBasedChannel, TextBasedChannel, Message, GuildMember } from 'discord.js';
 import { IBot } from '../interfaces/IBot';
-import { Readable } from 'stream';
+import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
+import { PassThrough } from 'stream';
+
+import ffmpeg from 'ffmpeg-static';
+import prism from 'prism-media';
+
+process.env.FFMPEG_PATH = require('ffmpeg-static');
 
 interface TTSSession {
     connection: VoiceConnection;
@@ -22,15 +29,6 @@ interface TTSSession {
     isPlaying: boolean;
 }
 
-let edgeTts: typeof import('edge-tts') | null = null;
-
-async function loadEdgeTts(): Promise<typeof import('edge-tts')> {
-    if (!edgeTts) {
-        edgeTts = await import('edge-tts');
-    }
-    return edgeTts;
-}
-
 export class TTSService {
     private sessions: Map<string, TTSSession> = new Map();
     private client: IBot;
@@ -38,6 +36,12 @@ export class TTSService {
     constructor(client: IBot) {
         this.client = client;
         this.client.on('messageCreate', (message: Message) => this.handleMessage(message));
+    }
+
+    private async createEngine(): Promise<MsEdgeTTS> {
+        const engine = new MsEdgeTTS();
+        await engine.setMetadata('es-MX-DaliaNeural', OUTPUT_FORMAT.WEBM_24KHZ_16BIT_MONO_OPUS);
+        return engine;
     }
 
     public async joinChannel(voiceChannel: VoiceBasedChannel, textChannel: TextBasedChannel): Promise<VoiceConnection> {
@@ -51,9 +55,17 @@ export class TTSService {
             channelId: voiceChannel.id,
             guildId: voiceChannel.guild.id,
             adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+            selfDeaf: true,
         });
 
-        const player = createAudioPlayer();
+        connection.on('error', () => { });
+
+        const player = createAudioPlayer({
+            behaviors: {
+                noSubscriber: NoSubscriberBehavior.Play,
+            },
+        });
+
         connection.subscribe(player);
 
         const session: TTSSession = {
@@ -69,6 +81,11 @@ export class TTSService {
         this.sessions.set(voiceChannel.guild.id, session);
 
         player.on(AudioPlayerStatus.Idle, () => {
+            session.isPlaying = false;
+            this.processQueue(session);
+        });
+
+        player.on('error', () => {
             session.isPlaying = false;
             this.processQueue(session);
         });
@@ -124,27 +141,44 @@ export class TTSService {
         session.isPlaying = true;
 
         try {
-            const edge = await loadEdgeTts();
-            const audioBuffer = await edge.tts(text, {
-                voice: 'es-MX-DaliaNeural',
-                rate: '+0%',
-                pitch: '+0Hz',
-                volume: '+0%',
-            });
+            const connState = session.connection.state.status;
+            if (connState !== VoiceConnectionStatus.Ready) {
+                try {
+                    await entersState(session.connection, VoiceConnectionStatus.Ready, 30_000);
+                } catch {
+                    // Reintentar la reconexión
+                    session.connection.rejoin();
+                    await entersState(session.connection, VoiceConnectionStatus.Ready, 20_000);
+                }
+            }
+            const engine = await this.createEngine();
+            const { audioStream } = engine.toStream(text);
 
-            const stream = Readable.from(audioBuffer);
+            const chunks: Buffer[] = [];
+            for await (const chunk of audioStream) {
+                chunks.push(Buffer.from(chunk));
+            }
+
+            const fullBuffer = Buffer.concat(chunks);
+
+            if (fullBuffer.length === 0) {
+                session.isPlaying = false;
+                this.processQueue(session);
+                return;
+            }
+
+            const stream = new PassThrough();
+            stream.end(fullBuffer);
+
             const resource = createAudioResource(stream, {
-                inputType: StreamType.Arbitrary,
-                inlineVolume: false,
+                inputType: StreamType.Arbitrary, // ffmpeg lo transcodifica
+                silencePaddingFrames: 5,
             });
 
             session.player.play(resource);
 
-            await entersState(session.player, AudioPlayerStatus.Playing, 5_000).catch(() => {
-                session.isPlaying = false;
-                this.processQueue(session);
-            });
-        } catch {
+            await entersState(session.player, AudioPlayerStatus.Playing, 5_000);
+        } catch (error) {
             session.isPlaying = false;
             this.processQueue(session);
         }
@@ -153,6 +187,7 @@ export class TTSService {
     public leaveChannel(guildId: string): void {
         const session = this.sessions.get(guildId);
         if (session) {
+            session.player.stop();
             session.connection.destroy();
             this.sessions.delete(guildId);
         }
