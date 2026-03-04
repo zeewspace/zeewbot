@@ -4,6 +4,7 @@ import { ICommand } from '../interfaces/ICommand';
 import { Logger } from 'winston';
 import { WelcomeService } from '../services/WelcomeService';
 import { TicketService } from '../services/TicketService';
+import { TTSService } from '../services/TTSService';
 import { DatabaseService } from '../database/DatabaseService';
 
 export class ZeewBot extends Client implements IBot {
@@ -11,6 +12,7 @@ export class ZeewBot extends Client implements IBot {
   public logger: Logger;
   public welcomeService: WelcomeService;
   public ticketService: TicketService;
+  public ttsService: TTSService;
   public database: DatabaseService;
 
   constructor(logger: Logger) {
@@ -21,6 +23,7 @@ export class ZeewBot extends Client implements IBot {
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildVoiceStates,
       ],
       partials: [
         Partials.Channel,
@@ -33,23 +36,18 @@ export class ZeewBot extends Client implements IBot {
 
     this.commands = new Collection();
     this.logger = logger;
-    
-    // Inicializar servicios
+
     this.welcomeService = new WelcomeService(this);
     this.ticketService = new TicketService(this);
+    this.ttsService = new TTSService(this);
     this.database = new DatabaseService(process.env.REDIS_URL);
-    
-    // Agregar servicios al cliente para acceso en eventos
-    (this as any).welcomeService = this.welcomeService;
-    (this as any).ticketService = this.ticketService;
+
   }
 
   public async start(token: string): Promise<void> {
     try {
-      // Conectar a la base de datos si está configurada
       await this.database.connect();
-      
-      // Login
+
       await this.login(token);
     } catch (error) {
       this.logger.error('Failed to start bot:', error);
@@ -59,16 +57,14 @@ export class ZeewBot extends Client implements IBot {
 
   public async shutdown(): Promise<void> {
     this.logger.info('Shutting down bot...');
-    
-    // Limpiar servicios
+
     this.welcomeService.cleanup();
-    
-    // Desconectar de la base de datos
+    this.ttsService.cleanup();
+
     await this.database.disconnect();
-    
-    // Destruir el cliente
+
     this.destroy();
-    
+
     this.logger.info('Bot shut down successfully');
   }
 }
