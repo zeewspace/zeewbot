@@ -27,6 +27,7 @@ interface TTSSession {
     guildId: string;
     queue: Message[];
     isPlaying: boolean;
+    lastSpeakerId: string | null;
 }
 
 export class TTSService {
@@ -76,6 +77,7 @@ export class TTSService {
             guildId: voiceChannel.guild.id,
             queue: [],
             isPlaying: false,
+            lastSpeakerId: null,
         };
 
         this.sessions.set(voiceChannel.guild.id, session);
@@ -135,8 +137,15 @@ export class TTSService {
         const message = session.queue.shift();
         if (!message) return;
 
-        const text = message.content.trim();
-        if (!text) return;
+        const rawText = message.content.trim();
+        if (!rawText) return;
+
+        let text = rawText;
+        if (message.author.id !== session.lastSpeakerId) {
+            const displayName = message.member?.displayName ?? message.author.displayName;
+            text = `${displayName} dice: ${rawText}`;
+            session.lastSpeakerId = message.author.id;
+        }
 
         session.isPlaying = true;
 
@@ -146,7 +155,6 @@ export class TTSService {
                 try {
                     await entersState(session.connection, VoiceConnectionStatus.Ready, 30_000);
                 } catch {
-                    // Reintentar la reconexión
                     session.connection.rejoin();
                     await entersState(session.connection, VoiceConnectionStatus.Ready, 20_000);
                 }

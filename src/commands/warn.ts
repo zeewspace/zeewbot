@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, PermissionFlagsBits, 
 import { ICommand } from '../interfaces/ICommand';
 import { IBot } from '../interfaces/IBot';
 import { IWarning } from '../interfaces/IWarning';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export const command: ICommand = {
     data: new SlashCommandBuilder()
@@ -41,7 +41,7 @@ export const command: ICommand = {
             return;
         }
 
-        const warnId = uuidv4().split('-')[0];
+        const warnId = randomUUID().split('-')[0];
         const newWarn: IWarning = {
             id: warnId,
             userId: user.id,
