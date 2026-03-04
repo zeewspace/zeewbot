@@ -27,6 +27,7 @@ interface TTSSession {
     guildId: string;
     queue: Message[];
     isPlaying: boolean;
+    lastSpeakerId: string | null;
 }
 
 export class TTSService {
@@ -76,6 +77,7 @@ export class TTSService {
             guildId: voiceChannel.guild.id,
             queue: [],
             isPlaying: false,
+            lastSpeakerId: null,
         };
 
         this.sessions.set(voiceChannel.guild.id, session);
@@ -129,14 +131,51 @@ export class TTSService {
         }
     }
 
+    private resolveMentions(message: Message): string {
+        let text = message.content;
+
+        text = text.replace(/<@!?(\d+)>/g, (_, id) => {
+            const mentioned = message.mentions.users.get(id);
+            if (!mentioned) return '';
+            const member = message.guild?.members.cache.get(id);
+            return member?.displayName ?? mentioned.displayName;
+        });
+
+        text = text.replace(/<@&(\d+)>/g, (_, id) => {
+            const role = message.guild?.roles.cache.get(id);
+            return role?.name ?? '';
+        });
+
+        text = text.replace(/<#(\d+)>/g, (_, id) => {
+            const channel = message.guild?.channels.cache.get(id);
+            return channel?.name ?? '';
+        });
+
+        text = text.replace(/<a?:\w+:\d+>/g, (match) => {
+            const name = match.split(':')[1];
+            return name ?? '';
+        });
+
+        text = text.replace(/https?:\/\/\S+/gi, 'enlace');
+
+        return text.trim();
+    }
+
     private async processQueue(session: TTSSession): Promise<void> {
         if (session.queue.length === 0 || session.isPlaying) return;
 
         const message = session.queue.shift();
         if (!message) return;
 
-        const text = message.content.trim();
-        if (!text) return;
+        const rawText = this.resolveMentions(message);
+        if (!rawText) return;
+
+        let text = rawText;
+        if (message.author.id !== session.lastSpeakerId) {
+            const displayName = message.member?.displayName ?? message.author.displayName;
+            text = `${displayName} dice: ${rawText}`;
+            session.lastSpeakerId = message.author.id;
+        }
 
         session.isPlaying = true;
 
@@ -146,7 +185,6 @@ export class TTSService {
                 try {
                     await entersState(session.connection, VoiceConnectionStatus.Ready, 30_000);
                 } catch {
-                    // Reintentar la reconexión
                     session.connection.rejoin();
                     await entersState(session.connection, VoiceConnectionStatus.Ready, 20_000);
                 }
