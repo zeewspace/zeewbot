@@ -131,13 +131,43 @@ export class TTSService {
         }
     }
 
+    private resolveMentions(message: Message): string {
+        let text = message.content;
+
+        text = text.replace(/<@!?(\d+)>/g, (_, id) => {
+            const mentioned = message.mentions.users.get(id);
+            if (!mentioned) return '';
+            const member = message.guild?.members.cache.get(id);
+            return member?.displayName ?? mentioned.displayName;
+        });
+
+        text = text.replace(/<@&(\d+)>/g, (_, id) => {
+            const role = message.guild?.roles.cache.get(id);
+            return role?.name ?? '';
+        });
+
+        text = text.replace(/<#(\d+)>/g, (_, id) => {
+            const channel = message.guild?.channels.cache.get(id);
+            return channel?.name ?? '';
+        });
+
+        text = text.replace(/<a?:\w+:\d+>/g, (match) => {
+            const name = match.split(':')[1];
+            return name ?? '';
+        });
+
+        text = text.replace(/https?:\/\/\S+/gi, 'enlace');
+
+        return text.trim();
+    }
+
     private async processQueue(session: TTSSession): Promise<void> {
         if (session.queue.length === 0 || session.isPlaying) return;
 
         const message = session.queue.shift();
         if (!message) return;
 
-        const rawText = message.content.trim();
+        const rawText = this.resolveMentions(message);
         if (!rawText) return;
 
         let text = rawText;
